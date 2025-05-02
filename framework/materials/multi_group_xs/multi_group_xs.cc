@@ -110,6 +110,16 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
       precursors_.resize(n_precs);
     }
   }
+  
+  // Init electron data
+  if (is_bxslib_)
+  {
+    sigma_e_.assign(n_grps, 0.0);
+    sigma_c_.assign(n_grps, 0.0);
+    stopping_power_.assign(n_grps, 0.0);
+    momentum_transfer_.assign(n_grps, 0.0);
+    density_.assign(n_grps, 0.0);
+  } 
 
   // Combine the data
   size_t precursor_count = 0;
@@ -215,11 +225,17 @@ MultiGroupXS::Reset()
   scattering_order_ = 0;
   num_precursors_ = 0;
   is_fissionable_ = false;
-
+  is_bxslib_ = false;
   sigma_t_.clear();
   sigma_a_.clear();
   transfer_matrices_.clear();
 
+  sigma_e_.clear();
+  sigma_c_.clear();
+  stopping_power_.clear();
+  momentum_transfer_.clear();
+  density_.clear();
+  
   sigma_f_.clear();
   chi_.clear();
   nu_sigma_f_.clear();
