@@ -29,9 +29,9 @@ MultiGroupXS::Initialize(const std::string& file_name,
   std::string filetype;
   H5ReadAttribute<std::string>(file, "filetype", filetype);
   if (filetype != "mgxs")
-    throw std::runtime_error(file_name + " is not a valid OpenMC library file");
+    throw std::runtime_error(file_name + " is not a valid HDF5 library file");
 
-  log.Log() << "Reading OpenMC cross-section file \"" << file_name << "\"\n";
+  log.Log() << "Reading HDF5 cross-section file \"" << file_name << "\"\n";
 
   // Number of groups
   if (not H5ReadAttribute<size_t>(file, "energy_groups", num_groups_))
@@ -106,7 +106,42 @@ MultiGroupXS::Initialize(const std::string& file_name,
   if (sigma_a_.empty())
     ComputeAbsorption();
   ComputeDiffusionParameters();
-
+  
+  // Is charged particle?
+  H5ReadGroupAttribute<bool>(file, dataset_name, "bxslib", is_bxslib_);
+  if (is_bxslib_)
+  {
+    // Energy deposition
+    H5ReadDataset1D<double>(file, path + "edep", sigma_e_);
+    OpenSnLogicalErrorIf(sigma_e_.empty(),
+                         "\"edep\" data block not found in " + file_name + ".");
+    // Charge deposition
+    H5ReadDataset1D<double>(file, path + "cdep", sigma_c_);
+    OpenSnLogicalErrorIf(sigma_c_.empty(),
+                         "\"cdep\" data block not found in " + file_name + ".");
+    // Stopping Power
+    H5ReadDataset1D<double>(file, path + "sp", stopping_power_);
+    OpenSnLogicalErrorIf(stopping_power_.empty(),
+                         "\"sp\" data block not found in " + file_name + ".");
+    // Momentum Transfer
+    H5ReadDataset1D<double>(file, path + "mt", momentum_transfer_);
+    OpenSnLogicalErrorIf(momentum_transfer_.empty(),
+                         "\"mt\" data block not found in " + file_name + ".");
+    // Density
+    H5ReadDataset1D<double>(file, path + "rho", density_);
+    OpenSnLogicalErrorIf(density_.empty(),
+                         "\"rho\" data block not found in " + file_name + ".");
+                     
+  } // Is charged particle?
+  else
+  {
+    // Clear electron data if not charged particle
+    sigma_e_.clear();
+    sigma_c_.clear();
+    stopping_power_.clear();
+    momentum_transfer_.clear();
+    density_.clear();
+  }  
   // Is fissionable?
   H5ReadGroupAttribute<bool>(file, dataset_name, "fissionable", is_fissionable_);
   if (is_fissionable_)
