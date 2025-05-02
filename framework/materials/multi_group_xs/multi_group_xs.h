@@ -16,6 +16,7 @@ public:
       scattering_order_(0),
       num_precursors_(0),
       is_fissionable_(false),
+      is_bxslib_(false),
       adjoint_(false),
       scaling_factor_(1.0),
       diffusion_initialized_(false)
@@ -68,6 +69,8 @@ public:
   size_t GetNumPrecursors() const { return num_precursors_; }
 
   bool IsFissionable() const { return is_fissionable_; }
+  
+  bool IsBxslib() const { return is_bxslib_; }
 
   void SetAdjointMode(bool val)
   {
@@ -83,6 +86,16 @@ public:
   const std::vector<double>& GetSigmaTotal() const { return sigma_t_; }
 
   const std::vector<double>& GetSigmaAbsorption() const { return sigma_a_; }
+  
+  const std::vector<double>& GetSigmaEdep() const { return sigma_e_; }
+
+  const std::vector<double>& GetSigmaCdep() const { return sigma_c_; }
+  
+  const std::vector<double>& GetStoppingPower() const { return stopping_power_; }
+
+  const std::vector<double>& GetMomentumTransfer() const { return momentum_transfer_; }
+
+  const std::vector<double>& GetDensity() const { return density_; }
 
   const std::vector<SparseMatrix>& GetTransferMatrices() const
   {
@@ -132,6 +145,8 @@ private:
   size_t num_precursors_;
   /// Is fissionable?
   bool is_fissionable_;
+  /// Is charged particle?
+  bool is_bxslib_;
   /// Can be used for adjoint calculations
   bool adjoint_;
   /// An arbitrary scaling factor
@@ -146,6 +161,16 @@ private:
   std::vector<double> sigma_a_;
   /// Fission cross section
   std::vector<double> sigma_f_;
+  /// Energy deposition cross section
+  std::vector<double> sigma_e_;
+  /// Charge deposition cross section
+  std::vector<double> sigma_c_;
+  /// Stopping power data
+  std::vector<double> stopping_power_;
+  /// Momentum transfer data
+  std::vector<double> momentum_transfer_;
+  /// Material density data
+  std::vector<double> density_;
   /// Neutron production due to fission
   std::vector<double> nu_sigma_f_;
   /// Neutron fission spectrum
