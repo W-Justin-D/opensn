@@ -98,13 +98,13 @@ WrapMultiGroupXS(py::module& xs)
     )"
   );
   multigroup_xs.def(
-    "LoadFromOpenMC",
+    "LoadFromHDF5",
     [](MultiGroupXS& self, const std::string& file_name, const std::string& dataset_name,
        double temperature)
     {
       self.Initialize(file_name, dataset_name, temperature);
     },
-    "Load multi-group cross sections from an OpenMC cross-section file.",
+    "Load multi-group cross sections from an HDF5 cross-section file.",
     py::arg("file_name"),
     py::arg("dataset_name"),
     py::arg("temperature")
@@ -139,6 +139,11 @@ WrapMultiGroupXS(py::module& xs)
     "scaling_factor",
     &MultiGroupXS::GetScalingFactor,
     "Get the arbitrary scaling factor."
+  );
+    multigroup_xs.def_property_readonly(
+    "is_bxslib",
+    &MultiGroupXS::IsBxslib,
+    "Check if contains electron data."
   );
   multigroup_xs.def_property_readonly(
     "sigma_t",
@@ -186,6 +191,36 @@ WrapMultiGroupXS(py::module& xs)
     "inv_velocity",
     XS_GETTER(GetInverseVelocity),
     "Get inverse velocity.",
+    py::keep_alive<0, 1>()
+  );
+  multigroup_xs.def_property_readonly(
+    "sigma_e",
+    XS_GETTER(GetSigmaEdep),
+    "Get energy deposition cross section.",
+    py::keep_alive<0, 1>()
+  );
+    multigroup_xs.def_property_readonly(
+    "sigma_c",
+    XS_GETTER(GetSigmaCdep),
+    "Get charge deposition cross section.",
+    py::keep_alive<0, 1>()
+  );
+    multigroup_xs.def_property_readonly(
+    "stopping_power",
+    XS_GETTER(GetStoppingPower),
+    "Get groupwise stopping powers.",
+    py::keep_alive<0, 1>()
+  );
+    multigroup_xs.def_property_readonly(
+    "momentum_transfer",
+    XS_GETTER(GetMomentumTransfer),
+    "Get groupwise momentum transfer data.",
+    py::keep_alive<0, 1>()
+  );
+    multigroup_xs.def_property_readonly(
+    "density",
+    XS_GETTER(GetDensity),
+    "Get material density data.",
     py::keep_alive<0, 1>()
   );
   // clang-format on
